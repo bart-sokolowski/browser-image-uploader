@@ -1,0 +1,35 @@
+
+# Visual Studio cache
+.vs/
+*.user
+*.suo
+
+# Build outputs
+bin/
+obj/
+
+# SQLite database
+app.db
+
+# User uploads
+wwwroot/uploads/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.cache
+
+# Razor generated files
+*.g.cshtml.cs
+*.g.cs
+
+# Auto-generated
+**/staticwebassets/*
+**/*.dll
+**/*.pdb
+
+# NuGet
+*.nupkg
+packages/

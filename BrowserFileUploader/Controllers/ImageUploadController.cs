@@ -21,14 +21,14 @@ namespace BrowserFileUploader.Controllers
 
         [HttpGet("")]
         [HttpGet("upload")]
-        public IActionResult Upload()
+        public IActionResult Index()
         {
             return View(new ImageUploadViewModel());
         }
 
         [HttpPost("upload")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload(ImageUploadViewModel model)
+        public async Task<IActionResult> Index(ImageUploadViewModel model)
         {
             //validate the uploaded image
             model = await Helpers.ImageValidator.ValidateImageUpload(model);

@@ -69,7 +69,7 @@ namespace BrowserFileUploader
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=ImageUpload}/{action=Upload}/{id?}");
+                    pattern: "{controller=ImageUpload}/{action=Index}/{id?}");
             });
         }
     }

@@ -50,6 +50,8 @@ namespace BrowserFileUploader
                     return new FileSystemImageStorageService(fullPath);
                 }
             });
+
+            services.AddScoped<IImageUploadDbService, ImageUploadDbService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -24,5 +24,18 @@ namespace BrowserFileUploader.Services
             var relativePath = $"~/{Consts.Consts.DEFAULT_FILE_STORAGE_UPLOAD_PATH}/{uniqueName}";
             return relativePath;
         }
+
+        public Task DeleteImageAsync(string storedLocation, CancellationToken cancellationToken = default)
+        {
+            var relativePath = storedLocation.Replace("~", "").TrimStart('/');
+            var fullPath = Path.Combine(_rootPath, Path.GetFileName(relativePath));
+
+            if (File.Exists(fullPath))
+            {
+                File.Delete(fullPath);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }

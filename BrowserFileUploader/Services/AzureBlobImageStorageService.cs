@@ -32,5 +32,13 @@ namespace BrowserFileUploader.Services
 
             return blobClient.Uri.ToString();
         }
+
+        public async Task DeleteImageAsync(string storedLocation, CancellationToken cancellationToken = default)
+        {
+            var blobName = Path.GetFileName(new Uri(storedLocation).AbsolutePath);
+            var blobClient = _blobContainer.GetBlobClient(blobName);
+
+            await blobClient.DeleteIfExistsAsync(cancellationToken: cancellationToken);
+        }
     }
 }

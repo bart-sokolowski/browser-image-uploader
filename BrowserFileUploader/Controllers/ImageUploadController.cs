@@ -8,13 +8,13 @@ namespace BrowserFileUploader.Controllers
 {
     public class ImageUploadController : Controller
     {
-        private readonly AppDbContext _dbContext;
+        private readonly IImageUploadDbService _dbService;
         private readonly IImageStorageService _storageService;
         private readonly IConfiguration _configuration;
 
-        public ImageUploadController(AppDbContext dbContext, IImageStorageService storageService, IConfiguration configuration)
+        public ImageUploadController(IImageUploadDbService dbService, IImageStorageService storageService, IConfiguration configuration)
         {
-            _dbContext = dbContext;
+            _dbService = dbService;
             _storageService = storageService;
             _configuration = configuration;
         }
@@ -64,16 +64,33 @@ namespace BrowserFileUploader.Controllers
                     StorageMode = storageMode
                 };
 
-                _dbContext.UploadedImages.Add(entity);
-                await _dbContext.SaveChangesAsync();
+                
 
-                model.Success = true;
-                model.Message = "Image uploaded successfully.";
+                //check if the db succeed to store the file reference to complete the transaction
+                //if not, remove the stored image
+                if (!await _dbService.SaveUploadRecordAsync(entity))
+                {
+                    try
+                    {
+                        await _storageService.DeleteImageAsync(storedLocation);
+                    }
+                    catch
+                    {
+                        // log the error to the monitoring service like Azure Logger
+                    }
+
+                    model.Success = false;
+                    model.Message = "The image upload was successfull, but we could not record it in the database. Please try again later.";
+
+                    return View(model);
+                }
+
                 model.ImageUrl = storedLocation.StartsWith("http", StringComparison.OrdinalIgnoreCase)
                     ? storedLocation
                     : Url.Content(storedLocation);
 
                 return View(model);
+
             }
             catch (Exception ex) {
                 model.Success = false;

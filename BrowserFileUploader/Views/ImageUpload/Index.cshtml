@@ -6,7 +6,7 @@
 
 <h1>Upload Image</h1>
 
-<form asp-action="Upload" asp-controller="ImageUpload" method="post" enctype="multipart/form-data">
+<form asp-action="Index" asp-controller="ImageUpload" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="file">Select image (JPG/PNG, max 1024x1024 stored):</label>
         <input asp-for="File" type="file" class="form-control" accept=".jpg,.jpeg,.png,image/jpeg,image/png" />

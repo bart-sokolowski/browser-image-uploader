@@ -24,8 +24,8 @@ This provides a clean separation between the UI and controller logic.
 
 The application supports two image storage implementations:
 
--   **Azure** -- Images are stored in an Azure Blob Storage container.
--   **FileSystem** -- Images are stored locally (for example:
+-   **Azure** -- Images are stored in a provided Azure Blob Storage container.
+-   **FileSystem** -- Images are stored locally (
     `wwwroot/uploads`).
 
 Two services implement the **IImageStorageService** interface:
@@ -48,7 +48,7 @@ cross-platform image handling.\
 It is used to:
 
 -   Load images without locking the filesystem\
--   Read metadata such as image width and height\
+-   Read metadata like image width and height\
 -   Support validation that prevents uploading images exceeding the
     maximum dimensions (1024×1024)
 
@@ -80,7 +80,6 @@ Entity Framework Core.
     -   Original file name\
     -   Stored file name\
     -   Content type\
-    -   Image dimensions\
     -   Storage mode used\
     -   Upload timestamp
 
@@ -92,7 +91,7 @@ schema.
 After a successful upload:
 
 -   The stored image URL or local path is added to the ViewModel\
--   The image is displayed in the Razor view (`Upload.cshtml`)\
+-   The image is displayed in the Razor view (`ImageUpload/Index.cshtml`)\
 -   A success message is shown to the user
 
 # **Configuration**

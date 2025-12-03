@@ -83,8 +83,9 @@ Entity Framework Core.
     -   Storage mode used\
     -   Upload timestamp
 
-A migration was created and applied to generate the SQLite database
-schema.
+A migration was created and applied to generate the SQLite database schema. \
+
+To maintain consistency between the uploaded file and its database record, the application performs a simple recovery step after each upload. The file is first saved to the selected storage provider, and then an audit entry is written to the SQLite database. If the database operation fails, the application automatically deletes the previously uploaded file using the storage service’s DeleteImageAsync method, preventing unreferenced files. The upload is only considered successful if both the storage operation and database record creation succeed.
 
 # **User Interface**
 

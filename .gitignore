@@ -33,3 +33,7 @@ wwwroot/uploads/
 # NuGet
 *.nupkg
 packages/
+
+appsettings.json
+appsettings.Development.json
+appsettings.*.json

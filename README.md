@@ -1,118 +1,117 @@
-Application Structure
-Controller
+# **Application Structure**
+
+## **Controller**
 
 The application exposes a single controller with two endpoints:
 
-GET – Returns the upload view.
+-   **GET** -- Returns the upload view.
+-   **POST** -- Handles image submission, validation, saving, and
+    response display.
 
-POST – Handles image submission, validation, saving, and response display.
+## **ViewModel**
 
-ViewModel
+Image data is transferred using the **ImageUploadViewModel**, which
+contains:
 
-Image data is transferred using the ImageUploadViewModel, which contains:
-
-The uploaded file (IFormFile)
-
-Validation and error messages
-
-Upload success state
-
-The resulting image URL or path
+-   The uploaded file (`IFormFile`)
+-   Validation and error messages
+-   Upload success state
+-   The resulting image URL or path
 
 This provides a clean separation between the UI and controller logic.
 
-Storage Modes
+# **Storage Modes**
 
-The app can operate in two modes:
+The application supports two image storage implementations:
 
-Azure – Images are stored in an Azure Blob Storage container.
+-   **Azure** -- Images are stored in an Azure Blob Storage container.
+-   **FileSystem** -- Images are stored locally (for example:
+    `wwwroot/uploads`).
 
-FileSystem – Images are stored locally (e.g., wwwroot/uploads).
+Two services implement the **IImageStorageService** interface:
 
-Two services implement the IImageStorageService interface:
+-   `AzureBlobImageStorageService`
+-   `FileSystemImageStorageService`
 
-AzureBlobImageStorageService
+Both services implement `SaveImageAsync`, which allows the application
+to switch storage mechanisms without modifying controller logic.\
+This design makes the storage layer extensible and easy to replace or
+expand.
 
-FileSystemImageStorageService
+Storage mode is controlled through configuration and environment
+variables.
 
-Both services implement the SaveImageAsync method, allowing the application to switch storage implementations without modifying controller logic. This design makes the storage layer extensible and easily replaceable.
+# **Image Processing**
 
-Storage mode is determined using configuration and environment variables.
+The project uses the **SixLabors.ImageSharp** library for safe and
+cross-platform image handling.\
+It is used to:
 
-Image Processing
+-   Load images without locking the filesystem\
+-   Read metadata such as image width and height\
+-   Support validation that prevents uploading images exceeding the
+    maximum dimensions (1024×1024)
 
-The project uses the SixLabors.ImageSharp package for safe and cross-platform image handling. It is used to:
+# **Validation Flow**
 
-Load images without locking the filesystem
+When an image is uploaded, the following validation checks are
+performed:
 
-Read image metadata such as width and height
+-   The file exists\
+-   The content type is allowed (JPG or PNG)\
+-   The file extension is valid\
+-   The image dimensions do not exceed **1024 × 1024**
 
-Support validation logic that ensures uploaded images do not exceed the maximum allowed dimensions (1024x1024)
+If validation fails, an appropriate error message is added to the
+ViewModel and shown on the upload view.
 
-Validation Flow
+If validation succeeds:
 
-When an image is uploaded, the following validation steps are performed:
+-   The image is loaded and saved using the selected storage mode\
+-   A database record for the image upload is created
 
-Check that a file is provided
+# **Database Storage**
 
-Check for allowed content types (JPG or PNG)
+Uploaded image references are stored in a local SQLite database using
+Entity Framework Core.
 
-Check for allowed file extensions
+-   The `AppDbContext` is configured to use SQLite.
+-   The `ImageUploadReference` model stores:
+    -   Original file name\
+    -   Stored file name\
+    -   Content type\
+    -   Image dimensions\
+    -   Storage mode used\
+    -   Upload timestamp
 
-Check that image dimensions do not exceed 1024x1024
+A migration was created and applied to generate the SQLite database
+schema.
 
-If validation fails, the appropriate error message is placed in the ViewModel and displayed on the upload view.
-
-If validation passes:
-
-The image is loaded and saved using the selected storage mode
-
-A database record is created for the upload
-
-Database Storage
-
-Uploaded images are logged in a local SQLite database using Entity Framework Core.
-
-The AppDbContext is configured to use SQLite
-
-The ImageUploadReference model stores metadata such as:
-
-Original file name
-
-Stored file name
-
-Content type
-
-Image dimensions
-
-Storage mode used
-
-Upload timestamp
-
-A migration was created and applied to generate the SQLite database schema locally.
-
-User Interface
+# **User Interface**
 
 After a successful upload:
 
-The stored image reference (URL or local path) is passed back through the ViewModel
+-   The stored image URL or local path is added to the ViewModel\
+-   The image is displayed in the Razor view (`Upload.cshtml`)\
+-   A success message is shown to the user
 
-The image is rendered in the Razor view (Upload.cshtml) along with a success message
+# **Configuration**
 
-Configuration
+Application settings are managed in **appsettings.json** and
+environment-specific overrides.
 
-Settings are managed through appsettings.json and environment-specific overrides. The relevant configuration structure is:
+Example configuration:
 
-"ConnectionStrings": {
-  "DefaultConnection": "Data Source=app.db;",
-  "AzureBlobStorage": "AZURE_STORAGE_KEY"
-},
+    "ConnectionStrings": {
+      "DefaultConnection": "Data Source=app.db;",
+      "AzureBlobStorage": "AZURE_STORAGE_CONN_STRING"
+    },
 
-"Storage": {
-  "Mode": "FILE_SYSTEM or AZURE",
-  "LocalPath": "uploads"
-},
+    "Storage": {
+      "Mode": "FILE_SYSTEM or AZURE",
+      "LocalPath": "uploads"
+    },
 
-"Azure": {
-  "ContainerName": "DEFAULT_CONTAINER_NAME"
-}
+    "Azure": {
+      "ContainerName": "DEFAULT_CONTAINER_NAME"
+    }

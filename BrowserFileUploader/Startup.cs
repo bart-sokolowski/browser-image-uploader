@@ -2,6 +2,7 @@
 using BrowserFileUploader.Interfaces;
 using BrowserFileUploader.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace BrowserFileUploader
 {
